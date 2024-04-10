@@ -1,4 +1,5 @@
 device_name: [24v_payload, LUMA, Regular_Payload]
+#Wring PI GPIO number
 gpio: [11, 10, 13]
 
 pwm_name: [LUMA_brightness]
