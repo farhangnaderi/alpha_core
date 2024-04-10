@@ -33,7 +33,7 @@ class GPIOManager
             int state;
             int id;
             std::string device_name;
-            std::string gpio_name;
+            std::string gpio_num;
             std::string service_name; 
             ros::ServiceServer m_set_gpio;
         };
@@ -47,7 +47,7 @@ class GPIOManager
             int state;
             int id;
             std::string device_name;
-            std::string gpio_name;
+            std::string gpio_num;
             std::string topic_name; 
             ros::Subscriber m_set_pwm;
         };
