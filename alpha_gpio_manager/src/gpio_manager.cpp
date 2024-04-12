@@ -156,7 +156,11 @@ bool GPIOManager::f_cb_srv_set_power_all(std_srvs::SetBool::Request &req, std_sr
         res.message = "All power ports are enabled";
     }
     else
-    {
+    {   for (int i=0; i<m_gpio_count; i++)
+        {
+        digitalWrite(m_gpio_id[i], LOW);
+        gpio_vector[i].state = 1;
+        }
         res.success = 1;
         res.message = "All power ports are disabled";
     }
@@ -191,11 +195,11 @@ bool GPIOManager::f_cb_srv_get_state(
                         std_srvs::Trigger::Request &req,
                         std_srvs::Trigger::Response &res)
 {
-    std::string msg = "#GPIO Manager: \r\n";
+    std::string msg = "#GPIO Manager#";
 
     for (int i=0; i<m_gpio_count; i++)
     {
-        msg = msg + "GPIO-"+ gpio_vector[i].gpio_num + "=" + std::to_string(gpio_vector[i].state) + " | Device name:" + gpio_vector[i].device_name + "\r\n";
+        msg = msg + "|Device:"+ gpio_vector[i].device_name + "=" + std::to_string(gpio_vector[i].state);
     }
     res.success = 1;
     res.message = msg;
