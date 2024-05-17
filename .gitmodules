@@ -22,3 +22,7 @@
 	path = external/blueprint_oculus_sonar
 	url = https://github.com/GSO-soslab/blueprint_oculus_sonar
 	branch = main
+[submodule "external/nucleus_driver"]
+	path = external/nucleus_driver
+	url = https://github.com/GSO-soslab/nucleus_driver
+	branch = noetic-devel
