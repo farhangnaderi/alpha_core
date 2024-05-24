@@ -17,12 +17,19 @@ class Log_RAM_Temp:
         self.pub_cpu_temp_info = rospy.Publisher("/cpu/temp", Temperature, queue_size=1)
         self.pub_cpu_usage_info = rospy.Publisher("/cpu/utilized", Float64, queue_size=1)
 
+        self.device = self.check_device()
+
         self.rate = rospy.Rate(1)
         self.collect_and_publish()
 
     def get_cpu_temp(self):
         temp = psutil.sensors_temperatures()
-        return float(temp['cpu_thermal'][0][1])
+        
+        if self.device == 'Raspberry Pi':
+            return float(temp['cpu_thermal'][0][1])
+        
+        elif self.device == 'NVIDIA Jetson':
+            return float(temp['thermal_fan_est'][0][1])
     
     def get_ram_usage(self):    
         meminfo = {}
@@ -38,6 +45,23 @@ class Log_RAM_Temp:
     def get_cpu_usage(self):
         return psutil.cpu_percent()
     
+    def check_device(self):
+        # Check for Raspberry Pi
+        if os.path.exists('/proc/device-tree/model'):
+            with open('/proc/device-tree/model', 'r') as f:
+                model_info = f.read().strip()
+                if 'Raspberry Pi' in model_info:
+                    return 'Raspberry Pi'
+
+        # Check for NVIDIA Jetson
+        if os.path.exists('/proc/device-tree/compatible'):
+            with open('/proc/device-tree/compatible', 'r') as f:
+                compatible_info = f.read().strip()
+                if 'nvidia' in compatible_info:
+                    return 'NVIDIA Jetson'
+
+        return 'Unknown Device'
+
     def collect_and_publish(self):
         temp_msg = Temperature()
         while not rospy.is_shutdown():
