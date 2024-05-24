@@ -2,9 +2,7 @@
 
 #Author: Tony Jacob
 #Part of RISE Project. 
-#Log RAM and Temp of RPI and publish as ROS topics.
-#sudo apt install libraspberrypi-bin
-#sudo usermod -aG video <username>
+#Log RAM and Temp of computer boards and publish as ROS topics.
 #tony.jacob@uri.edu
 
 import os
@@ -15,17 +13,16 @@ from sensor_msgs.msg import Temperature
 
 class Log_RAM_Temp:
     def __init__(self) -> None:
-        self.pub_ram_info = rospy.Publisher("/alpha_rise/pi/ram_utilized", Float64, queue_size=1)
-        self.pub_cpu_temp_info = rospy.Publisher("/alpha_rise/pi/cpu/temp", Temperature, queue_size=1)
-        self.pub_cpu_usage_info = rospy.Publisher("/alpha_rise/pi/cpu/utilized", Float64, queue_size=1)
+        self.pub_ram_info = rospy.Publisher("/ram_utilized", Float64, queue_size=1)
+        self.pub_cpu_temp_info = rospy.Publisher("/cpu/temp", Temperature, queue_size=1)
+        self.pub_cpu_usage_info = rospy.Publisher("/cpu/utilized", Float64, queue_size=1)
 
-        rospy.loginfo("Pi Monitoring started")
         self.rate = rospy.Rate(1)
         self.collect_and_publish()
 
     def get_cpu_temp(self):
-        temp = os.popen("vcgencmd measure_temp").readline()
-        return float(temp.replace("temp=", "").replace("'C", "").strip())
+        temp = psutil.sensors_temperatures()
+        return float(temp['acpitz'][0][1])
     
     def get_ram_usage(self):    
         meminfo = {}
@@ -54,7 +51,7 @@ class Log_RAM_Temp:
             cpu_used = self.get_cpu_usage()
 
             self.pub_ram_info.publish((ram_used/ram_total) *100)
-            self.pub_cpu_temp_info.publish(temp)
+            self.pub_cpu_temp_info.publish(temp_msg)
             self.pub_cpu_usage_info.publish(cpu_used)
             self.rate.sleep()
     
