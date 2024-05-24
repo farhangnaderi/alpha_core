@@ -22,7 +22,7 @@ class Log_RAM_Temp:
 
     def get_cpu_temp(self):
         temp = psutil.sensors_temperatures()
-        return float(temp['acpitz'][0][1])
+        return float(temp['cpu_thermal'][0][1])
     
     def get_ram_usage(self):    
         meminfo = {}
